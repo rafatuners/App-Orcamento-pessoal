@@ -68,6 +68,42 @@ class Bd{
         }
         return despesas
     }
+
+    pesquisar(despesa) {
+        
+        let despesasFiltradas = Array()
+
+        despesasFiltradas = this.recuperarTodosRegistros()
+      
+        //ano
+        if(despesa.ano != '') {
+            despesasFiltradas = despesasFiltradas.filter(d => d.ano == despesa.ano)
+        }
+        
+        //mes
+        if(despesa.mes != '') {
+            despesasFiltradas = despesasFiltradas.filter(d => d.mes == despesa.mes)
+        }
+
+        //dia
+        if(despesa.dia != '') {
+            despesasFiltradas = despesasFiltradas.filter(d => d.dia == despesa.dia)
+        }
+        //tipo
+        if(despesa.tipo != '') {
+            despesasFiltradas = despesasFiltradas.filter(d => d.tipo == despesa.tipo)
+        }
+        //descricao
+        if(despesa.descricao != '') {
+            despesasFiltradas = despesasFiltradas.filter(d => d.descricao == despesa.descricao)
+        }
+        //valor
+        if(despesa.valor != '') {
+            despesasFiltradas = despesasFiltradas.filter(d => d.valor == despesa.valor)
+        }
+
+        console.log(despesasFiltradas)
+    }
 }
 
 let bd = new Bd()
@@ -99,6 +135,13 @@ function cadastrarDespesa() {
         //dialog de sucesso
         $('#modalRegistraDespesa').modal('show')
 
+        ano.value = ''
+        mes.value = ''
+        dia.value = ''
+        tipo.value = ''
+        descricao.value = ''
+        valor.value = ''
+
     } else {
         //dialog de erro
         document.getElementById('modal_titulo').innerHTML = 'Erro na incrusão do registro'
@@ -118,5 +161,61 @@ function carregaListaDespesas() {
     let despesas = Array()
     despesas = bd.recuperarTodosRegistros()
 
-    console.log(despesas)
+    //selecionando o elemento tbody da tabela
+    let listaDespesas = document.getElementById('listaDespesas')
+
+    /*
+    <tr>
+                <td>15/03/2018</td>
+                <td>Alimentação</td>
+                <td>Compras do mês</td>
+                <td>444.44</td>
+              </tr>
+    */
+
+    //percorrer o array despesas, listando cada despesa de forma dinâmica
+    despesas.forEach(function(d) {
+        
+        
+
+        //criando a linha (tr)
+        let linha = listaDespesas.insertRow()
+
+        //criar as colunas (td)
+        linha.insertCell(0).innerHTML = `${d.dia}/${d.mes}/${d.ano}`
+        
+
+        //ajustar o tipo
+        switch(d.tipo) {
+            case '1': d.tipo = 'Alimentação'
+                break
+            case '2': d.tipo = 'Educação'
+                break
+            case '3': d.tipo = 'Lazer'
+                break
+            case '4': d.tipo = 'Saúde'
+                break
+            case '5': d.tipo = 'Transporte'
+                break     
+        }
+        linha.insertCell(1).innerHTML = d.tipo
+        linha.insertCell(2).innerHTML = d.descricao
+        linha.insertCell(3).innerHTML = d.valor
+
+    })
+}
+
+function pesquisarDespesas() {
+    let ano = document.getElementById('ano').value
+    let mes = document.getElementById('mes').value
+    let dia = document.getElementById('dia').value
+    let tipo = document.getElementById('tipo').value
+    let descricao = document.getElementById('descricao').value
+    let valor = document.getElementById('valor').value
+
+    let despesa = new Despesa(ano, mes, dia, tipo, descricao, valor)
+
+    bd.pesquisar(despesa)
+
+    
 }
